@@ -21,15 +21,14 @@ io.on('connection', (socket) => {
 
   socket.on('createMessage', (message) => {
     console.log('new Message: ', message);
+    io.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().getTime()
+    });
   });
 
-  socket.emit('newMessage', {
-    from: 'test@test.com',
-    text: 'new text'
-  });
-  
 });
-
 
 server.listen(port, () => {
   console.log(`Server is up on ${port}`);
