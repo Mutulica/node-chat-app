@@ -1,5 +1,21 @@
 var socket = io();
 
+function scrollToBottom(){
+  //Selectors
+  var messages = $('#messages');
+  var newMessage = messages.children('li:last-child');
+  //Heights
+  var clientHeight = messages.prop('clientHeight');
+  var scrollTop = messages.prop('scrollTop');
+  var scrollHeight = messages.prop('scrollHeight');
+  var newMessageHight = newMessage.innerHeight();
+  var lastMessageHight = newMessage.prev().innerHeight();
+
+  if(clientHeight + scrollTop + newMessageHight + lastMessageHight >= scrollHeight){
+    messages.scrollTop(scrollHeight);
+  }
+}
+
 socket.on('connect', function() {
   console.log('Connected to server');
 });
@@ -18,7 +34,7 @@ socket.on('newMessage', function(message) {
     createdAt: formatedTime
   });
   $('#messages').append(html);
-
+  scrollToBottom();
 });
 
 socket.on('newLocationMessage', function(location) {
@@ -31,7 +47,7 @@ socket.on('newLocationMessage', function(location) {
     createdAt: formatedTime
   });
   $('#messages').append(html);
-
+  scrollToBottom();
 });
 
 $('#message-form').on('submit', function(e) {
@@ -39,7 +55,7 @@ $('#message-form').on('submit', function(e) {
   var messageBox = $('[name=message]');
     console.log(messageBox.val());
   if(!messageBox.val()){
-    return alert('Please write a message');
+    return false;
   }
   socket.emit('createMessage', {
     from: 'Sebas2',
