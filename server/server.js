@@ -20,13 +20,10 @@ io.on('connection', (socket) => {
   socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joind'));
 
-  socket.on('disconnect', () => {
-    console.log('Disconnected from server');
-  });
-
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, callback) => {
     console.log('new Message: ', message);
     io.emit('newMessage', generateMessage(message.from, message.text));
+    callback(message);
     // socket.broadcast.emit('newMessage', {
     //   from: 'Sebastian',
     //   text: 'somne text',
@@ -34,6 +31,9 @@ io.on('connection', (socket) => {
     // });
   });
 
+  socket.on('disconnect', () => {
+    console.log('Disconnected from server');
+  });
 });
 
 server.listen(port, () => {
