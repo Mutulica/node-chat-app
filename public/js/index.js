@@ -9,25 +9,38 @@ socket.on('disconnect', function(){
 });
 
 socket.on('newMessage', function(message) {
+
+  var template = $('#message-template').html();
   var formatedTime = moment(message.createdAt).format('h:mm a');
-  var li = $('<li></li>');
-  li.text(`${message.from} ${formatedTime}: ${message.text}`);
-  $('#messages').append(li);
+  var html = Mustache.render(template, {
+    text: message.text,
+    from: message.from,
+    createdAt: formatedTime
+  });
+  $('#messages').append(html);
+
 });
 
 socket.on('newLocationMessage', function(location) {
+
+  var template = $('#location-message-template').html();
   var formatedTime = moment(location.createdAt).format('h:mm a');
-  var li = $('<li></li>');
-  var link = $('<a target="_blank">My Location </a>');
-  li.text(`${location.from} ${formatedTime}: `);
-  link.attr('href', location.url);
-  li.append(link);
-  $('#messages').append(li);
+  var html = Mustache.render(template, {
+    from: location.from,
+    url: location.url,
+    createdAt: formatedTime
+  });
+  $('#messages').append(html);
+
 });
 
 $('#message-form').on('submit', function(e) {
   e.preventDefault();
   var messageBox = $('[name=message]');
+    console.log(messageBox.val());
+  if(!messageBox.val()){
+    return alert('Please write a message');
+  }
   socket.emit('createMessage', {
     from: 'Sebas2',
     text: messageBox.val()
